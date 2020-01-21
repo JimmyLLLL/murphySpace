@@ -1,12 +1,12 @@
 <template>
   <div class>
-    我是头部
+    我是侧边栏
   </div>
 </template>
 
 <script>
 export default {
-  name: 'header'
+  nav: 'nav'
 }
 </script>
 
