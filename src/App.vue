@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Murphyheader/>
-    <router-view/>
+    <div class="main-wrapper">
+      <router-view/>
+    </div>
     <Murphynav />
   </div>
 </template>
@@ -18,5 +20,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+  .main-wrapper{
+    margin-left: 201px;
+  }
 </style>

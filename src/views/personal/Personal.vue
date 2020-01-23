@@ -1,12 +1,12 @@
 <template>
     <div class="homeWrapper">
-        <div class="home">首页</div>
+        <div class="home">个人</div>
     </div>
 </template>
 
 <script>
 export default {
-    name:'home'
+    name:'Personal'
 }
 </script>
 
