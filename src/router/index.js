@@ -1,8 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import home from "../views/home/home.vue";
-import MySpace from "../views/mySpace/MySpace.vue";
-import Personal from "../views/personal/Personal.vue";
+import Home from "../views/home/home.vue";
 
 Vue.use(Router);
 
@@ -11,17 +9,27 @@ export default new Router({
     {
       path: "/",
       name: "Home",
-      component: home
+      component: Home
     },
     {
       path: "/MySpace",
       name: "MySpace",
-      component: MySpace
+      component: () => import("../views/mySpace/MySpace.vue")
     },
     {
       path: "/Personal",
       name: "Personal",
-      component: Personal
+      component: () => import("../views/personal/Personal.vue")
+    },
+    {
+      path: "/BlogDetail",
+      name: "BlogDetail",
+      component: () => import("../components/blog/BlogDetail.vue")
+    },
+    {
+      path: "/Writter",
+      name: "Writter",
+      component: () => import("../components/writter/writter.vue")
     }
   ]
 });

@@ -1,21 +1,24 @@
 <template>
-    <div class="homeWrapper">
-        <div class="home">MySpace</div>
+    <div class="my-space-wrapper">
+        <BlogList></BlogList>
     </div>
 </template>
 
 <script>
+import BlogList from '../../components/blog/BlogList'
 export default {
-    name:'MySpace'
+    name:'MySpace',
+    components:{
+        BlogList
+    }
 }
 </script>
 
 
 <style lang="scss" scoped>
-.homeWrapper{
-    .home{
-        color:yellow
-    }    
+.my-space-wrapper{
+    height: 100%;
+    padding: 0 20px;  
 }
 
 </style>

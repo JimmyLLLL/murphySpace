@@ -1,5 +1,5 @@
 <template>
-    <div class="homeWrapper">
+    <div class="personal-wrapper">
         <div class="home">个人</div>
     </div>
 </template>
@@ -12,7 +12,7 @@ export default {
 
 
 <style lang="scss" scoped>
-.homeWrapper{
+.personal-wrapper{
     .home{
         color:yellow
     }    

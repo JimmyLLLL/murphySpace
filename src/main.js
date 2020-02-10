@@ -4,7 +4,17 @@ import Vue from "vue";
 import "./element-conf.js";
 import App from "./App";
 import router from "./router";
-import "./style";
+import "./style/index.css";
+import store from "./store";
+import VueQuillEditor from "vue-quill-editor";
+// require styles
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+import { handleDirective } from "./directive";
+handleDirective(Vue);
+
+Vue.use(VueQuillEditor /* { default global options } */);
 
 Vue.config.productionTip = false;
 
@@ -12,6 +22,7 @@ Vue.config.productionTip = false;
 new Vue({
   el: "#app",
   router,
+  store,
   components: { App },
   template: "<App/>"
 });
