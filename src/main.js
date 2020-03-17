@@ -6,6 +6,7 @@ import App from "./App";
 import router from "./router";
 import "./style/index.css";
 import store from "./store";
+import api from "./api";
 import VueQuillEditor from "vue-quill-editor";
 // require styles
 import "quill/dist/quill.core.css";
@@ -17,6 +18,7 @@ handleDirective(Vue);
 Vue.use(VueQuillEditor /* { default global options } */);
 
 Vue.config.productionTip = false;
+Vue.prototype.$api = api;
 
 /* eslint-disable no-new */
 new Vue({

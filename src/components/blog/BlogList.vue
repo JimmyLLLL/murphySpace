@@ -1,19 +1,18 @@
 <template>
-    <div class="blog-list-wrapper">
+    <div class="blog-list-wrapper" v-loading='isLoading'>
         <div v-if="isHaveData" @click="handleArticleClick">
-            <div v-for="(item) in itemList" :key="item.id" class="list-single" :article-id="item.id">
+            <div v-for="(item) in data" :key="item.id" class="list-single" :article-id="item.id">
                 <div class="list-title">
                     {{item.title}}
                 </div>
-                <div class="list-main">{{item.content}}</div>
                 <div class="list-bottom">
-                    <div class="bottom-left">创造者：{{item.author}}</div>
-                    <div class="bottom-right">诞生时间：{{item.updateTime}}</div>
+                    <div class="bottom-left">创造者：{{item.name}}</div>
+                    <div class="bottom-right">诞生时间：{{item.moment}}</div>
                 </div>
             </div>            
         </div>
         <div v-else class="is-nodata">
-            暂无数据，阁下可以创建属于您的专属空间
+            {{sign}}
         </div>
 
     </div>
@@ -25,25 +24,37 @@
     data () {
       return {}
     },
+    props: {
+        data: {
+            default:[]
+        },
+        isLoading: { 
+            default:true
+        }
+    },
     computed:{
-        itemList(){
-            return this.$store.state.blogSingle.itemList
+        sign(){
+            return this.isLoading ? 'Loading...':'暂无数据，阁下可以创建属于您的专属空间'
         },
         isHaveData(){
-            return this.itemList.length
+            return this.data.length
         }
     },
     methods: {
         handleArticleClick(e){
+            let parentTarget
             if(e.target.className==='list-single'){
-                this.$router.push('BlogDetail')
+                parentTarget = e.target
             }else{
-                let parentTarget = e.target.parentNode
+                parentTarget = e.target.parentNode
                 while(parentTarget && parentTarget.className!=='list-single'){
                     parentTarget = parentTarget.parentNode
-                }
-                this.$router.push('BlogDetail');            
-            }  
+                }            
+            } 
+            this.$router.push({
+                path:'/BlogDetail',
+                query: {target: parentTarget.getAttribute('article-id')}
+            })
         }
     }
   }
@@ -71,13 +82,6 @@
         font-size: 18px;
         font-weight: 600;
         line-height:1.6;
-    }
-    .list-main{
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height:1.6;
-        font-size: 15px;
     }
     .list-bottom{
         display: flex;

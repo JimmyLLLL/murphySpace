@@ -1,5 +1,6 @@
 <template>
 <div class="ql-container ql-snow">
+    <div>我是标题</div>
     <div class="ql-editor">
         <pre class="ql-syntax" spellcheck="false"><span class="hljs-keyword">const</span> a = <span class="hljs-number">12</span>
 </pre><h1>adasd</h1><p>asdasdasd</p>          
@@ -15,6 +16,9 @@ export default {
     name:'BlogDetail',
     components:{
         quillEditor
+    },
+    created(){
+        console.log(this.$route.query.target)
     }
 }
 </script>
