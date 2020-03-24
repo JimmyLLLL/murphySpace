@@ -12,6 +12,11 @@ export default new Router({
       component: Home
     },
     {
+      path: "/loginDialog",
+      name: "loginDialog",
+      component: () => import("../components/loginDialog/loginDialog.vue")
+    },
+    {
       path: "/MySpace",
       name: "MySpace",
       component: () => import("../views/mySpace/MySpace.vue")

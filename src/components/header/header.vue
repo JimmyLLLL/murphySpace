@@ -1,47 +1,87 @@
 <template>
   <div class="header-wrapper">
-    <div class="left">我是左边</div>
+    <div class="left animated rotateIn" v-if="isReading" @click="handleBack">返回<Icon iconClass="return"></Icon></div>
+    <div class="left animated flipInX" v-if="!isReading">{{nickname}}<Icon iconClass="smile"></Icon></div>
     <div class="center">MurphySpace</div>
     <div class="right">
       <span class="right-son-1" v-if="!isLogin" @click="handleLoginBtnClick">登入</span>
-      <span class="right-son-2" v-if="isLogin" @click="handleCreateWritter">{{writterText}}</span>
+      <span class="right-son-2" v-if="isLogin" @click="handleCreateWritter">{{writterText}}<Icon v-if="isWritting" iconClass="return"></Icon><Icon v-if="!isWritting" iconClass="writter"></Icon></span>
+      <span class="right-son-3" v-if="isLogin" @click="handleOut">登出<Icon iconClass="out"></Icon></span>
     </div>
-    <loginDialog ref="loginDialog"></loginDialog>
   </div>
 </template>
 
 <script>
-import loginDialog from '../loginDialog/loginDialog'
 export default {
   name: 'murphyHeader',
   data(){
     return{
       isWritting:false,
-      writterText:'创作'
+      writterText:'创作',
+      isReading:false,
+      writterRouteBefore:null,
+      blogRouteBefore:null
+    }
+  },
+  watch:{
+    $route(to,from){
+      switch(to.path){
+        case '/BlogDetail':
+          this.isReading=true
+          this.blogRouteBefore = from.path
+          break
+        case '/':
+          this.isReading=false
+          this.isWritting = false
+          this.writterText = '创作'
+          break;
+        case '/Writter':
+          this.writterText = '返回文章列表'
+          this.isWritting = true
+          break;
+        case '/MySpace':
+          this.isReading=false
+          this.isWritting = false
+          this.writterText = '创作'
+          break;
+      }
     }
   },
   components:{
-    loginDialog
   },
   computed:{
     isLogin(){
-      return this.$store.state.login.isLogin
+      return this.$store.state.login.userData
+    },
+    nickname(){
+      return this.$store.state.login.userData ? '您好，' + this.$store.state.login.userData.nickname :''
     }
   },
+  created(){
+    window.addEventListener("clearItemEvent", function(e) {
+      e.key==='token' &&  this.$store.dispatch('changeLoginStatus',{userData:null})
+    });
+  },
   methods:{
+    handleBack(){
+      this.blogRouteBefore ?this.$router.push(this.blogRouteBefore) :this.$router.push('/')
+    },
     handleLoginBtnClick(){
-      this.$emit('showLoginDialog')
+      this.$router.push({
+        path:'/loginDialog'
+      })
     },
     handleCreateWritter(){
       if(this.isWritting){
-        this.$router.push('/')
-        this.writterText = '创作'
+        this.writterRouteBefore ?this.$router.push(this.writterRouteBefore) :this.$router.push('/')
       }else{
-        this.$router.push('Writter')
-        this.writterText = '返回首页'
+        this.writterRouteBefore = this.$route.path
+        this.$router.push('/Writter')
       }
-      this.isWritting = !this.isWritting
-      
+    },
+    handleOut(){
+      localStorage.removeItem("token")
+      this.$store.dispatch('changeLoginStatus',{userData:null})
     }
   }
 }
@@ -55,13 +95,28 @@ export default {
     position: fixed;
     width: 100%;
   }
+  .right-son-2,.right-son-3{
+    transition:all .3s;
+  }
+  .right-son-2:hover,.right-son-3:hover{
+    font-size: 110%;
+  }
+  .right-son-2:hover{
+    color:#31cd38
+  }
+  .right-son-3:hover{
+    color:red
+  }
   .left,.center,.right{
     flex: 1;
     color: white;
     line-height: 40px;
     text-align: center;
   }
-  .right-son-1,.right-son-2{
+  .right-son-1,.right-son-2,.right-son-3{
     cursor: pointer;
+  }
+  .right-son-3{
+    margin-left: 20px;
   }
 </style>

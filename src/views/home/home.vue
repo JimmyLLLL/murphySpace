@@ -22,7 +22,7 @@ export default {
         async getBrevityList(page = 1){
             try{
                 const {data} = await this.$api.getBrevityList(page)
-                this.data = this.data.concat(data)
+                this.data = page ===1 ? data:this.data.concat(data)
             }catch(e){
                 this.$message.error(e)
             }finally{
@@ -33,6 +33,9 @@ export default {
         initLoading(){
             this.isLoading = true
         }
+    },
+    activated(){
+        this.$route.params.reload && this.getBrevityList()
     },
     created(){
         this.initLoading()

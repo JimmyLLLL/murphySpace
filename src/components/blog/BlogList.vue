@@ -1,13 +1,13 @@
 <template>
-    <div class="blog-list-wrapper" v-loading='isLoading'>
+    <div class="blog-list-wrapper">
         <div v-if="isHaveData" @click="handleArticleClick">
             <div v-for="(item) in data" :key="item.id" class="list-single" :article-id="item.id">
                 <div class="list-title">
                     {{item.title}}
                 </div>
                 <div class="list-bottom">
-                    <div class="bottom-left">创造者：{{item.name}}</div>
-                    <div class="bottom-right">诞生时间：{{item.moment}}</div>
+                    <div class="bottom-left"><Icon iconClass="user"></Icon>创造者：{{item.name}}</div>
+                    <div class="bottom-right"><Icon iconClass="time"></Icon>诞生时间：{{item.moment}}</div>
                 </div>
             </div>            
         </div>
@@ -51,10 +51,13 @@
                     parentTarget = parentTarget.parentNode
                 }            
             } 
-            this.$router.push({
-                path:'/BlogDetail',
-                query: {target: parentTarget.getAttribute('article-id')}
+            this.$nextTick(()=>{
+                this.$router.push({
+                    name:'BlogDetail',
+                    params: {target: parentTarget.getAttribute('article-id')}
+                })                
             })
+
         }
     }
   }

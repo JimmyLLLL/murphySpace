@@ -1,11 +1,8 @@
 <template>
-<div class="ql-container ql-snow">
-    <div>我是标题</div>
-    <div class="ql-editor">
-        <pre class="ql-syntax" spellcheck="false"><span class="hljs-keyword">const</span> a = <span class="hljs-number">12</span>
-</pre><h1>adasd</h1><p>asdasdasd</p>          
+    <div class="ql-container ql-snow" v-loading="isLoading" element-loading-text="数据传输中...">
+        <div class="title">{{title}}</div>
+        <div class="ql-editor" v-html="content"></div>
     </div>
-</div>
 </template>
 
 <script>
@@ -17,8 +14,30 @@ export default {
     components:{
         quillEditor
     },
+    data(){
+        return{
+            title:'',
+            content:'',
+            isLoading:false
+        }
+    },
+    methods:{
+        async getDetail(id){
+            try{
+                this.isLoading = true
+                const {data} = await this.$api.enterBlog(id)
+                this.title = data.title
+                this.content = data.content
+            }catch(e){
+                this.$message.error(e)
+            }finally{
+                this.isLoading = false
+            }
+
+        }
+    },
     created(){
-        console.log(this.$route.query.target)
+        this.getDetail(this.$route.params.target)
     }
 }
 </script>
@@ -28,5 +47,9 @@ export default {
         z-index: 0;
         margin: 10px 20px;
         border: none;
+    }
+    .title{
+        text-align: center;
+        font-size: 25px;
     }
 </style>

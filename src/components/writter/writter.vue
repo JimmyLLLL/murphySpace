@@ -1,6 +1,9 @@
 <template>
     <div class="wrapper">
-        <el-input class="writter-title" v-model="title" placeholder="在此为您的创意命一个题目"></el-input>
+        <div class="input-flex">
+            <el-input class="writter-title" v-model="title" placeholder="在此为您的创意命一个题目"></el-input>
+            <el-input class="writter-nickname" v-model="nickname" placeholder="署名"></el-input>
+        </div>
         <quillEditor v-model="content" :options="editorOption"></quillEditor>
         <div class="submit-move-dot" v-dragable><div class="submit-btn" @click="handleSend">Send</div></div>
     </div>
@@ -46,7 +49,8 @@ export default {
         return{
             editorOption,
             content:'',
-            title:''
+            title:'',
+            nickname:''
         }
     },
     mounted(){},
@@ -54,6 +58,9 @@ export default {
         content(val){
             console.log(val)
         }
+    },
+    created(){
+        Object.freeze(this.toolbar)
     },
     methods:{
         handleSend(){
@@ -63,23 +70,44 @@ export default {
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
+                    this.sendData()
                 }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消删除'
-                });
-        })
-        }}
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+            })
+        },
+        async sendData(){
+            try{
+                const result = await this.$api.sendBlog(this.title,this.nickname,this.content)
+                this.$router.push({name: 'Home',params: {reload:true}})
+                this.$message.success('感谢您为社区的贡献，已传送完毕')
+            }catch(e){
+                if(e.status===401){
+                    this.$message.error('账号信息过期，请重新登入')
+                }else{
+                    this.$message.error('发送过程出现问题，请联系Murphy')
+                }
+                
+            }
+            
+    
+        }
+     }
 }
 </script>
 
 <style lang="scss" scoped>
 .writter-title{
     margin-bottom: 10px;
+}
+.input-flex{
+    display: flex;
+    .writter-nickname{
+        width: 200px;
+        margin-left: 10px;
+    }
 }
 .submit-btn{
     color: white;
