@@ -1,10 +1,20 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper" v-loading="isLoading">
         <div class="input-flex">
             <el-input class="writter-title" v-model="title" placeholder="在此为您的创意命一个题目"></el-input>
             <el-input class="writter-nickname" v-model="nickname" placeholder="署名"></el-input>
         </div>
-        <quillEditor v-model="content" :options="editorOption"></quillEditor>
+      <el-upload
+            class="avatar-uploader"
+            action="http://www.jinmylam.xin:8003/blog/uploadBlogPhoto"
+            name="img"
+            :headers="header"
+            :show-file-list="false"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :before-upload="beforeUpload" 
+        />
+        <quillEditor v-model="content" :options="editorOption" ref="quillEditor"></quillEditor>
         <div class="submit-move-dot" v-dragable><div class="submit-btn" @click="handleSend">Send</div></div>
     </div>
 </template>
@@ -13,33 +23,25 @@
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
 import { quillEditor } from 'vue-quill-editor'
-const editorOption = {
-    placeholder: '感谢使用murphySpace创作工作区，在此激发您的灵感',
-    modules: {
-        syntax: {
-            highlight: text => hljs.highlightAuto(text).value
-        },
-        toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-            ['blockquote', 'code-block'],
+const toolbarContainer = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
 
-            [{'header': 1}, {'header': 2}],               // custom button values
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
-            [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
-            [{'direction': 'rtl'}],                         // text direction
+    [{'header': 1}, {'header': 2}],               // custom button values
+    [{'list': 'ordered'}, {'list': 'bullet'}],
+    [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
+    [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
+    [{'direction': 'rtl'}],                         // text direction
 
-            [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
-            [{'header': [1, 2, 3, 4, 5, 6, false]}],
+    [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
+    [{'header': [1, 2, 3, 4, 5, 6, false]}],
 
-            [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-            [{'font': []}],
-            [{'align': []}],
-            [ 'image']
-        ]
-    }
-}
-Object.freeze(editorOption)
+    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+    [{'font': []}],
+    [{'align': []}],
+    [ 'image']
+]
+Object.freeze(toolbarContainer)
 export default {
     name:'Writter',
     components:{
@@ -47,10 +49,43 @@ export default {
     },
     data(){
         return{
-            editorOption,
+            header:{
+                authorization:localStorage.getItem('token')
+            },
+            editorOption:{
+                placeholder: '感谢使用murphySpace创作工作区，在此激发您的灵感',
+                modules: {
+                    imageResize: {
+                        displayStyles: {
+                        backgroundColor: 'black',
+                        border: 'none',
+                        color: 'white'
+                        },
+                        modules: ['Resize', 'DisplaySize', 'Toolbar']
+                    },
+                    syntax: {
+                        highlight: text => hljs.highlightAuto(text).value
+                    },
+                    toolbar:{
+                        container:toolbarContainer,
+                        handlers: {
+                            'image': function (value) {
+                                    if (value) {
+                                        // 触发input框选择图片文件
+                                        document.querySelector('.avatar-uploader input').click()
+                                    } else {
+                                        this.quill.format('image', false);
+                                    }
+                                }
+                        }
+                }
+                    }
+            },
             content:'',
             title:'',
-            nickname:''
+            nickname:this.$store.state.login.userData.nickname,
+            isLoading:false,
+            id:''
         }
     },
     mounted(){},
@@ -61,8 +96,40 @@ export default {
     },
     created(){
         Object.freeze(this.toolbar)
+        this.handleInitCheck()
     },
     methods:{
+        uploadSuccess(res){
+            const quill = this.$refs.quillEditor.quill
+            const length = quill.getSelection().index; //光标所在位置
+            quill.insertEmbed(length, 'image', res.url)
+            quill.setSelection(length + 1)
+        },
+        beforeUpload(){
+
+        },
+        uploadError() {
+            this.$message.error('图片插入出现问题')
+        },
+        async getDetail(id){
+            try{
+                this.isLoading = true
+                const {data} = await this.$api.enterBlog(id)
+                this.title = data.title
+                this.content = data.content
+                this.nickname = data.name
+                this.id = data.id
+            }catch(e){
+                this.$message.error(e)
+            }finally{
+                this.isLoading = false
+            }
+
+        },
+        handleInitCheck(){
+            const editId = this.$route.params.target
+            editId && this.getDetail(editId)
+        },
         handleSend(){
             this.$confirm('即将传送，是否确定？', '提示', {
                     confirmButtonText: '好',
@@ -70,7 +137,11 @@ export default {
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    this.sendData()
+                    if(this.$route.params.target){
+                        this.modifyData()
+                    }else{
+                        this.sendData()
+                    }
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -91,6 +162,21 @@ export default {
                 }
                 
             }
+    
+        },
+        async modifyData(){
+            try{
+                const result = await this.$api.updateBlog(this.title,this.content,this.nickname,this.id)
+                this.$router.push({name: 'BlogDetail',params: {target:this.id}})
+                this.$message.success('感谢您为社区的贡献，已修改完毕')
+            }catch(e){
+                if(e.status===401){
+                    this.$message.error('账号信息过期，请重新登入')
+                }else{
+                    this.$message.error('修改过程出现问题，请联系Murphy')
+                }
+                
+            }
             
     
         }
@@ -101,6 +187,9 @@ export default {
 <style lang="scss" scoped>
 .writter-title{
     margin-bottom: 10px;
+}
+.avatar-uploader{
+    height:0
 }
 .input-flex{
     display: flex;

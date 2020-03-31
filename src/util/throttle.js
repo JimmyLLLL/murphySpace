@@ -1,9 +1,11 @@
-let timer = null;
-export const throttle = (func, time = 20) => () => {
-  if (timer) return;
-  timmer = setTimeout(() => {
-    func();
-    clearInterval(timmer);
-    timmer = null;
-  }, time);
+let timmer = null;
+export const throttle = (func, time = 20) => {
+  return e => {
+    if (timmer) return;
+    timmer = setTimeout(() => {
+      func(e);
+      clearTimeout(timmer);
+      timmer = null;
+    }, time);
+  };
 };

@@ -53,6 +53,14 @@ export default {
       id
     });
   },
+  updateBlog(title, content, nickname, id) {
+    return realAxios.post("updateArticle", {
+      title,
+      content,
+      nickname,
+      id
+    });
+  },
   sendBlog(title, nickname, content) {
     return realAxios.post("sendEdit", {
       title,
@@ -64,6 +72,28 @@ export default {
     return realAxios.post("personalGetBlog", {
       page,
       account
+    });
+  },
+  handleUpdate(nickname, word) {
+    return realAxios.post("PersonalInfoChange", {
+      nickname,
+      word
+    });
+  },
+  handleBlogDelete(id) {
+    return realAxios.post("handleBlogDelete", {
+      id
+    });
+  },
+  getComment(id) {
+    return realAxios.post("getComment", {
+      id
+    });
+  },
+  sendComment(index, value) {
+    return realAxios.post("sendComment", {
+      index,
+      value
     });
   }
 };

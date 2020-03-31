@@ -1,7 +1,8 @@
 <template>
     <div>
-        <span>点击＋以上传新头像</span>
+        <span>点击或者拖拽以上传新头像</span>
         <el-upload
+            :drag="true"
             class="avatar-uploader"
             action="http://www.jinmylam.xin:8003/blog/uploadAvator"
             :headers="headers"
@@ -9,8 +10,7 @@
             :on-success="handleAvatarSuccess"
             :on-error="handleError"
             :before-upload="beforeAvatarUpload">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <i class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>          
     </div>
   
@@ -35,6 +35,7 @@
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.$store.dispatch('changeAvator',{avator:this.imageUrl})
+        this.$message.success('头像已更新')
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';

@@ -1,11 +1,11 @@
 <template>
   <div class="header-wrapper">
-    <div class="left animated rotateIn" v-if="isReading" @click="handleBack">返回<Icon iconClass="return"></Icon></div>
+    <div class="left animated fadeInUp left-back" v-if="isReading" @click="handleBack">返回<Icon iconClass="return"></Icon></div>
     <div class="left animated flipInX" v-if="!isReading">{{nickname}}<Icon iconClass="smile"></Icon></div>
     <div class="center">MurphySpace</div>
     <div class="right">
       <span class="right-son-1" v-if="!isLogin" @click="handleLoginBtnClick">登入</span>
-      <span class="right-son-2" v-if="isLogin" @click="handleCreateWritter">{{writterText}}<Icon v-if="isWritting" iconClass="return"></Icon><Icon v-if="!isWritting" iconClass="writter"></Icon></span>
+      <span class="right-son-2" v-if="isLogin && !isReading" @click="handleCreateWritter">{{writterText}}<Icon v-if="isWritting" iconClass="return"></Icon><Icon v-if="!isWritting" iconClass="writter"></Icon></span>
       <span class="right-son-3" v-if="isLogin" @click="handleOut">登出<Icon iconClass="out"></Icon></span>
     </div>
   </div>
@@ -43,6 +43,7 @@ export default {
           this.isReading=false
           this.isWritting = false
           this.writterText = '创作'
+          this.writterRouteBefore = this.$route.path
           break;
       }
     }
@@ -59,7 +60,7 @@ export default {
   },
   created(){
     window.addEventListener("clearItemEvent", function(e) {
-      e.key==='token' &&  this.$store.dispatch('changeLoginStatus',{userData:null})
+      e.key==='token' &&  this.$store.dispatch && this.$store.dispatch('changeLoginStatus',{userData:null})
     });
   },
   methods:{
@@ -94,14 +95,15 @@ export default {
     display: flex;
     position: fixed;
     width: 100%;
+    z-index: 2;
   }
-  .right-son-2,.right-son-3{
+  .right-son-2,.right-son-3,.left-back{
     transition:all .3s;
   }
-  .right-son-2:hover,.right-son-3:hover{
+  .right-son-2:hover,.right-son-3:hover,.left-back:hover{
     font-size: 110%;
   }
-  .right-son-2:hover{
+  .right-son-2:hover,.left-back:hover{
     color:#31cd38
   }
   .right-son-3:hover{
@@ -113,7 +115,7 @@ export default {
     line-height: 40px;
     text-align: center;
   }
-  .right-son-1,.right-son-2,.right-son-3{
+  .right-son-1,.right-son-2,.right-son-3,.left-back{
     cursor: pointer;
   }
   .right-son-3{

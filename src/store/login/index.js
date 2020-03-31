@@ -8,6 +8,10 @@ export default {
     },
     CHANGE_AVATOR(state, payload) {
       state.userData.avator = payload.avator;
+    },
+    CHANGE_INFO(state, payload) {
+      state.userData.nickname = payload.nickname;
+      state.userData.word = payload.word;
     }
   },
   getters: {},
@@ -21,6 +25,9 @@ export default {
     },
     changeAvator({ commit }, payload) {
       commit("CHANGE_AVATOR", payload);
+    },
+    changeInfo({ commit }, payload) {
+      commit("CHANGE_INFO", payload);
     }
   }
 };

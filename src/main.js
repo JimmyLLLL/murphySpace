@@ -11,7 +11,9 @@ import store from "./store";
 import api from "./api";
 import animated from "animate.css";
 Vue.use(animated);
-import VueQuillEditor from "vue-quill-editor";
+import VueQuillEditor, { Quill } from "vue-quill-editor";
+import ImageResize from "quill-image-resize-module"; //调节图片大小
+Quill.register("modules/imageResize", ImageResize);
 // require styles
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";

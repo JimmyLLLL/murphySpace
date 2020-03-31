@@ -1,18 +1,25 @@
 <template>
-    <div class="ql-container ql-snow" v-loading="isLoading" element-loading-text="数据传输中...">
-        <div class="title">{{title}}</div>
-        <div class="ql-editor" v-html="content"></div>
+    <div>
+        <div class="ql-container ql-snow" element-loading-text="数据传输中...">
+            <div class="mask" v-loading="isLoading" v-if="isLoading"></div>
+            <div class="title">{{title}}</div>
+            <div class="ql-editor" v-html="content"></div>
+        </div>   
+        <comment :id="$route.params.target" v-if="!isLoading"></comment> 
     </div>
+
 </template>
 
 <script>
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
 import { quillEditor } from 'vue-quill-editor'
+import comment from '../comment'
 export default {
     name:'BlogDetail',
     components:{
-        quillEditor
+        quillEditor,
+        comment
     },
     data(){
         return{
@@ -43,6 +50,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .ql-snow{
+        min-height: 100%;
+    }
     .ql-container{
         z-index: 0;
         margin: 10px 20px;
@@ -51,5 +61,12 @@ export default {
     .title{
         text-align: center;
         font-size: 25px;
+    }
+    .mask{
+        top: 0;
+        left: 0;
+        position: fixed;
+        height: 100%;
+        width: 100%;
     }
 </style>

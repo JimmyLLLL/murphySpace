@@ -14,7 +14,7 @@
             <uploadAva></uploadAva>
             <el-input v-model="currentNickName" placeholder="请输入新昵称"></el-input>
             <el-input v-model="currentWord" placeholder="请输入新签名"></el-input>
-            <el-button>更新</el-button>
+            <el-button @click="handleUpdate">更新</el-button>
         </div>     
     </div>
 
@@ -33,6 +33,18 @@ export default {
       currentNickName:this.$store.state.login.userData.nickname,
       currentWord:this.$store.state.login.userData.word
     };
+  },
+  methods:{
+      async handleUpdate(){
+          try{
+              const {data} = await this.$api.handleUpdate(this.currentNickName,this.currentWord)
+              this.$store.dispatch('changeInfo',data.newInfo)
+              this.$message.success('信息更新已完成')
+          }catch(e){
+              this.$message.error('更新失败：'+e.message)
+          }
+          
+      }
   },
   computed:{
       userData(){
@@ -64,6 +76,7 @@ export default {
   .letter {
     font-size: 13px;
     color: #999;
+    line-height: 15px;
   }
   
   .bottom {

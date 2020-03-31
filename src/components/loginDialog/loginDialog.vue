@@ -8,7 +8,7 @@
       :modal="false"
       :before-close="handleClose">
       <el-input v-model="login.account" placeholder="请输入MurphySpace专属身份ID" class="input-account"></el-input>
-      <el-input placeholder="请输入私人密码" v-model="login.password" show-password class="input-password"></el-input>
+      <el-input placeholder="请输入私人密码" v-model="login.password" show-password class="input-password" @keyup.enter.native="handleLogin"></el-input>
       <span slot="footer" class="dialog-footer">
           <el-button @click="handleCancel">取 消</el-button>
           <el-button type="primary" @click="handleRegister">注 册</el-button>
