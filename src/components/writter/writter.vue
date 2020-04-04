@@ -15,17 +15,19 @@
             :before-upload="beforeUpload" 
         />
         <quillEditor v-model="content" :options="editorOption" ref="quillEditor"></quillEditor>
+        <chartColumnDialog ref="chartDialog"></chartColumnDialog>
         <div class="submit-move-dot" v-dragable><div class="submit-btn" @click="handleSend">Send</div></div>
     </div>
 </template>
 
 <script>
 import hljs from 'highlight.js'
+import chartColumnDialog from '../chartColumnDialog'
 import 'highlight.js/styles/monokai-sublime.css'
 import { quillEditor } from 'vue-quill-editor'
 const toolbarContainer = [
     ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
+    ['blockquote', 'code-block','charts'],
 
     [{'header': 1}, {'header': 2}],               // custom button values
     [{'list': 'ordered'}, {'list': 'bullet'}],
@@ -45,7 +47,8 @@ Object.freeze(toolbarContainer)
 export default {
     name:'Writter',
     components:{
-        quillEditor
+        quillEditor,
+        chartColumnDialog
     },
     data(){
         return{
@@ -76,7 +79,10 @@ export default {
                                     } else {
                                         this.quill.format('image', false);
                                     }
-                                }
+                                },
+                            'charts':()=>{
+                                this.$refs.chartDialog.centerDialogVisible = true
+                            }
                         }
                 }
                     }
@@ -88,20 +94,30 @@ export default {
             id:''
         }
     },
-    mounted(){},
-    watch:{
-        content(val){
-            console.log(val)
-        }
+    mounted(){
+        this.makeChartTitle()
     },
     created(){
         Object.freeze(this.toolbar)
         this.handleInitCheck()
     },
     methods:{
+        makeChartTitle(){
+            const target = document.getElementsByClassName('ql-charts')[0]
+            if(target){
+                this.$nextTick(()=>{
+                    target.innerHTML = 'charts'
+                })
+            }else{
+                setTimeout(()=>{
+                    this.makeChartTitle()
+                },100)
+                
+            }
+        },
         uploadSuccess(res){
             const quill = this.$refs.quillEditor.quill
-            const length = quill.getSelection().index; //光标所在位置
+            const length = quill.getSelection()!==null ? quill.getSelection().index:0; //光标所在位置
             quill.insertEmbed(length, 'image', res.url)
             quill.setSelection(length + 1)
         },
@@ -142,12 +158,7 @@ export default {
                     }else{
                         this.sendData()
                     }
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-            })
+                }).catch(() => {})
         },
         async sendData(){
             try{

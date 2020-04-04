@@ -10,11 +10,13 @@
                 </div>
             </div>
         </el-card> 
-        <div class="input-wrapper">
+        <div class="edit-btn animated zoomIn" v-if="!isEditing" @click="handleEdit">编辑</div>
+        <div class="input-wrapper animated flipInX" v-else>
             <uploadAva></uploadAva>
-            <el-input v-model="currentNickName" placeholder="请输入新昵称"></el-input>
-            <el-input v-model="currentWord" placeholder="请输入新签名"></el-input>
-            <el-button @click="handleUpdate">更新</el-button>
+            <el-input v-model="currentNickName" placeholder="请输入新昵称" class="nickname-edit"></el-input>
+            <el-input v-model="currentWord" placeholder="请输入新签名" class="word-edit"></el-input>
+            <el-button @click="handleBack" class="update-btn">返回</el-button>
+            <el-button @click="handleUpdate" class="update-btn">更新</el-button>
         </div>     
     </div>
 
@@ -31,10 +33,17 @@ export default {
   data() {
     return {
       currentNickName:this.$store.state.login.userData.nickname,
-      currentWord:this.$store.state.login.userData.word
+      currentWord:this.$store.state.login.userData.word,
+      isEditing:false
     };
   },
   methods:{
+      handleBack(){
+          this.isEditing = false
+      },
+      handleEdit(){
+          this.isEditing = true
+      },
       async handleUpdate(){
           try{
               const {data} = await this.$api.handleUpdate(this.currentNickName,this.currentWord)
@@ -51,17 +60,30 @@ export default {
           return this.$store.state.login.userData
       }
   },
-  created(){
-      console.log(this.$store.state.login.userData)
-  }
 }
 </script>
 
 <style lang="scss" scoped>
+.nickname-edit,.word-edit,.update-btn{
+    margin-top: 5px;
+}
+.edit-btn{
+    cursor: pointer;
+    position: absolute;
+    top:100px;
+    left:450px;
+    width: 100px;
+    height: 100px;
+    background: #31cd38;
+    border-radius: 50px;
+    line-height: 100px;
+    text-align: center;
+    color: white;
+}
 .input-wrapper{
     position: absolute;
-    top:50px;
-    left:350px;
+    top:25px;
+    left:450px;
 }
 .personal-wrappper{
     height: 100%;

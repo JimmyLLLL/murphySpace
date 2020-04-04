@@ -2,10 +2,15 @@
     <div>
         <div class="ql-container ql-snow" element-loading-text="数据传输中...">
             <div class="mask" v-loading="isLoading" v-if="isLoading"></div>
-            <div class="title">{{title}}</div>
+            <div class="title animated jackInTheBox">{{title}}</div>
+            <div class="infor-wrapper">
+                <span class="nickname">创作者：{{nickname}}</span>
+                <span class="time">更新时间：{{time}}</span>
+                <span class="account">身份：{{account}}</span>
+            </div>
             <div class="ql-editor" v-html="content"></div>
         </div>   
-        <comment :id="$route.params.target" v-if="!isLoading"></comment> 
+        <comment :id="target" v-if="!isLoading"></comment> 
     </div>
 
 </template>
@@ -25,7 +30,16 @@ export default {
         return{
             title:'',
             content:'',
+            nickname:'',
+            account:'',
+            time:'',
             isLoading:false
+        }
+    },
+    computed:{
+        target(){
+            const target = this.$route.params.target
+            return target ? target :sessionStorage.getItem('currentDetail')
         }
     },
     methods:{
@@ -34,6 +48,9 @@ export default {
                 this.isLoading = true
                 const {data} = await this.$api.enterBlog(id)
                 this.title = data.title
+                this.nickname = data.name
+                this.time = data.moment
+                this.account = data.uid
                 this.content = data.content
             }catch(e){
                 this.$message.error(e)
@@ -44,12 +61,29 @@ export default {
         }
     },
     created(){
-        this.getDetail(this.$route.params.target)
+        if(this.$route.params.target){
+            const target = this.$route.params.target
+            sessionStorage.setItem('currentDetail', target)
+            this.getDetail(target)
+        }else{
+            this.getDetail(sessionStorage.getItem('currentDetail'))
+        }
     }
 }
 </script>
 
 <style lang="scss" scoped>
+    .infor-wrapper{
+        font-size: 12px;
+        color:grey;
+        line-height: 50px;
+        .account{
+            margin-right: 10px;
+        }
+        .account,.time{
+            float: right;
+        }
+    }
     .ql-snow{
         min-height: 100%;
     }

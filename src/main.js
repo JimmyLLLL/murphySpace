@@ -27,12 +27,12 @@ Vue.component(Icon.name, Icon);
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 
-const orignalSetItem = localStorage.removeItem;
+const orignalremoveItem = localStorage.removeItem;
 localStorage.removeItem = function(key) {
   const clearItemEvent = new Event("clearItemEvent");
   clearItemEvent.key = key;
   window.dispatchEvent(clearItemEvent);
-  orignalSetItem.apply(this, arguments);
+  orignalremoveItem.apply(this, arguments);
 };
 
 /* eslint-disable no-new */

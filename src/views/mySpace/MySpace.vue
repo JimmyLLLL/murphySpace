@@ -14,6 +14,7 @@ export default {
     },
     data(){
         return{
+            isInScrollLoading:false,
             isLoading:false,
             data:[],
             mainHeight:Infinity,
@@ -55,6 +56,12 @@ export default {
                 return
             }
             try{
+                if(this.isInScrollLoading){
+                    console.log('加载中')
+                    this.currentPage--
+                    return
+                }
+                this.isInScrollLoading = true
                 const {data} = await this.$api.personalGetBlog(page,this.$store.state.login.userData.account)
                 if(!data.length){
                     this.isEmpty = true
@@ -72,6 +79,7 @@ export default {
                 this.$message.error(e)
             }finally{
                 this.isLoading = false
+                this.isInScrollLoading = false
             }
 
         },

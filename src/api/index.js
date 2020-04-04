@@ -95,5 +95,14 @@ export default {
       index,
       value
     });
+  },
+  deleteComment(id, postid) {
+    return realAxios.post("deleteComment", {
+      id,
+      postid
+    });
+  },
+  uploadBlogPhoto(form) {
+    return realAxios.post("uploadBlogPhoto", form);
   }
 };

@@ -14,6 +14,7 @@ export default {
     },
     data(){
         return{
+            isInScrollLoading:false,
             isLoading:false,
             data:[],
             mainHeight:Infinity,
@@ -45,6 +46,11 @@ export default {
     methods:{
         async getBrevityList(page = 1){
             try{
+                if(this.isInScrollLoading){
+                    this.currentPage --
+                    return
+                }
+                this.isInScrollLoading = true
                 const {data} = await this.$api.getBrevityList(page)
                 if(!data.length){
                     this.isEmpty = true
@@ -61,6 +67,7 @@ export default {
             }catch(e){
                 this.$message.error(e)
             }finally{
+                this.isInScrollLoading = false
                 this.isLoading = false
             }
 

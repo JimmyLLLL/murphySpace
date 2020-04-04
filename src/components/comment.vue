@@ -1,9 +1,9 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper animated slideInUp">
         <p class="comment-title">评论区域</p>
-        <el-input type="textarea" v-model="content" placeholder="在此输入您的想法" @keyup.enter.native="handleSend"></el-input>
+        <el-input type="textarea" v-model="content" placeholder="在此输入您的想法" v-if="isLogin"></el-input>
         <div class="send-btn-wrapper">
-            <el-button size="small" @click="handleSend">发送</el-button>
+            <el-button size="small" @click="handleSend" v-if="isLogin">发送</el-button>
         </div>
         <div class="comment-list-wrapper">
             <template v-if="commentList.length">
@@ -14,6 +14,7 @@
                             <span class="nickname">{{item.nickname}}</span>
                             <span class="time">时间：{{item.moment}}</span>
                             <span class="account">身份：{{item.name}}</span>
+                            <span class="delete" v-if="isLogin && item.name===account" @click="handleDelete(item.id)">删除</span>
                         </div>
                         <div class="infored-2">{{item.content}}</div>                
                     </div> 
@@ -27,15 +28,41 @@
 </template>
 
 <script>
+//@keyup.enter.native="handleSend"
 export default {
     name:'comment',
     props:{
         id:{
-            type:String,
             default:''
         }
     },
+    computed:{
+        isLogin(){
+            return this.$store.state.login.userData
+        },
+        account(){
+            return this.$store.state.login.userData.account
+        }
+    },
     methods:{
+        async handleDelete(id){
+            this.$confirm('即将删除', '警告', {
+                    confirmButtonText: '再次确认',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(async () => {
+                    try{
+                        const result = await this.$api.deleteComment(id,this.id)
+                        this.commentList = result.data.reverse()
+                        this.$message.success('删除操作已执行完毕')
+                    }catch(e){
+                        console.log(e)
+                        this.$message.error('删除失败')
+                    }
+                },()=>{})
+
+        },
         async handleSend(){
             try{
                 const result = await this.$api.sendComment(this.id,this.content)
@@ -88,13 +115,18 @@ export default {
         .nickname{
             padding-left: 5px;
         }
-        .time,.account{
+        .delete,.time,.account{
             font-size: 12px;
             line-height: 16px;
             float: right;
         }
         .account{
             margin-right: 15px;
+        }
+        .delete{
+            cursor: pointer;
+            margin-right: 15px;
+            color:red
         }
     }
     .infored-2{

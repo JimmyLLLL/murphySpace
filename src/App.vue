@@ -27,9 +27,7 @@ export default {
             localStorage.setItem("token",result.data.token)
             delete result.data.token
             this.$store.dispatch('changeLoginStatus',{userData:result.data})                
-        }catch(e){
-            console.log(e)
-        }
+        }catch(e){}
 
     },
     handleScroll(e){
@@ -58,7 +56,6 @@ export default {
   },
   created(){
     this.getWindowSize()
-    console.log(this.$store.state.position.height,this.$store.state.position.width)
     this.watchingWindowSzie()
     this.throttleScrollFunc()
     this.memoryLogin()

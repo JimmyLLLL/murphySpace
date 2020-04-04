@@ -5,7 +5,7 @@
     <div class="center">MurphySpace</div>
     <div class="right">
       <span class="right-son-1" v-if="!isLogin" @click="handleLoginBtnClick">登入</span>
-      <span class="right-son-2" v-if="isLogin && !isReading" @click="handleCreateWritter">{{writterText}}<Icon v-if="isWritting" iconClass="return"></Icon><Icon v-if="!isWritting" iconClass="writter"></Icon></span>
+      <span class="right-son-2" v-if="isLogin && !isReading && !isInPersonal" @click="handleCreateWritter">{{writterText}}<Icon v-if="isWritting" iconClass="return"></Icon><Icon v-if="!isWritting" iconClass="writter"></Icon></span>
       <span class="right-son-3" v-if="isLogin" @click="handleOut">登出<Icon iconClass="out"></Icon></span>
     </div>
   </div>
@@ -20,7 +20,8 @@ export default {
       writterText:'创作',
       isReading:false,
       writterRouteBefore:null,
-      blogRouteBefore:null
+      blogRouteBefore:null,
+      isInPersonal:false
     }
   },
   watch:{
@@ -28,23 +29,30 @@ export default {
       switch(to.path){
         case '/BlogDetail':
           this.isReading=true
-          this.blogRouteBefore = from.path
+          this.blogRouteBefore = from.path !== '/Writter' ? from.path:  '/'
+          this.isInPersonal = false
           break
         case '/':
           this.isReading=false
           this.isWritting = false
+          this.isInPersonal = false
           this.writterText = '创作'
           break;
         case '/Writter':
           this.writterText = '返回文章列表'
           this.isWritting = true
+          this.isInPersonal = false
           break;
         case '/MySpace':
           this.isReading=false
           this.isWritting = false
+          this.isInPersonal = false
           this.writterText = '创作'
           this.writterRouteBefore = this.$route.path
           break;
+        case '/Personal':
+          this.isInPersonal = true
+          this.blogRouteBefore = from.path
       }
     }
   },
@@ -60,7 +68,7 @@ export default {
   },
   created(){
     window.addEventListener("clearItemEvent", function(e) {
-      e.key==='token' &&  this.$store.dispatch && this.$store.dispatch('changeLoginStatus',{userData:null})
+      e.key==='token' && this.$store&&  this.$store.dispatch&& this.$store.dispatch('changeLoginStatus',{userData:null})
     });
   },
   methods:{

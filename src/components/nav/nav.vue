@@ -5,11 +5,11 @@
                 <i class="el-icon-menu"></i>
                 <span slot="title">首页</span>
             </el-menu-item>
-            <el-menu-item index="MySpace">
+            <el-menu-item index="/MySpace" v-if="$store.state.login.userData">
                 <i class="el-icon-document"></i>
                 <span slot="title">MySpace</span>
             </el-menu-item>
-            <el-menu-item index="Personal">
+            <el-menu-item index="/Personal" v-if="$store.state.login.userData">
                 <i class="el-icon-setting"></i>
                 <span slot="title">个人资料</span>
             </el-menu-item>

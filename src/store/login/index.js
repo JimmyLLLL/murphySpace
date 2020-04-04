@@ -17,7 +17,8 @@ export default {
   getters: {},
   actions: {
     changeLoginStatus({ commit }, payload) {
-      payload.userData.avator &&
+      payload.userData &&
+        payload.userData.avator &&
         (payload.userData.avator =
           "http://www.jinmylam.xin:8003/uploads/avator/" +
           payload.userData.avator);
