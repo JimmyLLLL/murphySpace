@@ -1,12 +1,12 @@
 <template>
   <div id="app" @scroll="handleScroll">
-    <Murphyheader />
+    <Murphyheader/>
     <div class="main-wrapper">
         <keep-alive :exclude="excludeArr">
           <router-view class="animated fadeIn"/>
         </keep-alive>
     </div>
-    <Murphynav />
+    <Murphynav v-if="isShowHeaderAndNav"/>
   </div>
 </template>
 
@@ -19,6 +19,15 @@ export default {
   components:{
     Murphyheader,
     Murphynav
+  },
+  watch:{
+    $route(to,from){
+      if(to.path==='/PersonalOther' || to.path==='/MySpaceOther'){
+        this.isShowHeaderAndNav = false
+      }else{
+        !this.isShowHeaderAndNav && (this.isShowHeaderAndNav = true)
+      }
+    }
   },
   methods:{
     async memoryLogin(){
@@ -51,7 +60,8 @@ export default {
   },
   data(){
     return {
-      excludeArr:['BlogDetail','Writter']
+      excludeArr:['BlogDetail','Writter','loginDialog','PersonalOther'],
+      isShowHeaderAndNav:true
     }
   },
   created(){

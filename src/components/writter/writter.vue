@@ -17,6 +17,7 @@
         <quillEditor v-model="content" :options="editorOption" ref="quillEditor"></quillEditor>
         <chartColumnDialog ref="chartDialog"></chartColumnDialog>
         <div class="submit-move-dot" v-dragable><div class="submit-btn" @click="handleSend">Send</div></div>
+        <div class="clear-move-dot" v-dragable><div class="submit-btn" @click="handleClear">清空</div></div>
     </div>
 </template>
 
@@ -31,7 +32,6 @@ const toolbarContainer = [
 
     [{'header': 1}, {'header': 2}],               // custom button values
     [{'list': 'ordered'}, {'list': 'bullet'}],
-    [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
     [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
     [{'direction': 'rtl'}],                         // text direction
 
@@ -91,7 +91,8 @@ export default {
             title:'',
             nickname:this.$store.state.login.userData.nickname,
             isLoading:false,
-            id:''
+            id:'',
+            tickSaveTimmer:null
         }
     },
     mounted(){
@@ -100,8 +101,48 @@ export default {
     created(){
         Object.freeze(this.toolbar)
         this.handleInitCheck()
+        this.initTickSave()
+    },
+    destroyed(){
+        this.destroyTickSave()
     },
     methods:{
+        destroyTickSave(){
+            clearInterval(this.tickSaveTimmer)
+        },
+        clearStorage(){
+            localStorage.setItem("title",'')
+            localStorage.setItem("content",'')   
+        },
+        handleClear(){
+            this.$confirm('即将清空一切，是否确定？', '提示', {
+                    confirmButtonText: '好',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    this.title = ''
+                    this.content = ''
+                    this.clearStorage()
+                }).catch(() => {})
+        },
+        async memoryLogin(){
+            try{
+                const result = await this.$api.memoryLogin()
+                localStorage.setItem("token",result.data.token)
+                delete result.data.token
+                this.$store.dispatch('changeLoginStatus',{userData:result.data})                
+            }catch(e){}
+
+        },
+        initTickSave(){
+            this.tickSaveTimmer = setInterval(()=>{
+                localStorage.setItem("title",this.title)
+                localStorage.setItem("content",this.content)
+                this.memoryLogin()
+                this.$message.success('自动保存成功')
+            },60000)
+        },
         makeChartTitle(){
             const target = document.getElementsByClassName('ql-charts')[0]
             if(target){
@@ -144,7 +185,16 @@ export default {
         },
         handleInitCheck(){
             const editId = this.$route.params.target
-            editId && this.getDetail(editId)
+            editId ? this.getDetail(editId): this.checkStorage()
+        },
+        checkStorage(){
+            const title = localStorage.getItem('title')
+            const content = localStorage.getItem('content')
+            if(title || content){
+                this.title = title
+                this.content = content
+                this.$message.success('已恢复到上次的写作进度')
+            }
         },
         handleSend(){
             this.$confirm('即将传送，是否确定？', '提示', {
@@ -163,6 +213,8 @@ export default {
         async sendData(){
             try{
                 const result = await this.$api.sendBlog(this.title,this.nickname,this.content)
+                this.destroyTickSave()
+                this.clearStorage()
                 this.$router.push({name: 'Home',params: {reload:true}})
                 this.$message.success('感谢您为社区的贡献，已传送完毕')
             }catch(e){
@@ -222,15 +274,22 @@ export default {
     background: inherit;
     cursor: pointer
 }
-.submit-move-dot{
-    background: rgb(49, 205, 56);
-    right: 130px;
-    top: 175px;
+.submit-move-dot,.clear-move-dot{
     position: absolute;
     height: 10px;
     width: 10px;
     border-radius: 50%;
     cursor: col-resize;
+}
+.submit-move-dot{
+    background: rgb(49, 205, 56);
+    right: 130px;
+    top: 175px;
+}
+.clear-move-dot{
+    background: red;
+    right: 130px;
+    bottom: 300px;    
 }
 .wrapper{
     height: calc(100% - 50px);

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="ql-container ql-snow" element-loading-text="数据传输中...">
+        <div class="ql-container ql-snow">
             <div class="mask" v-loading="isLoading" v-if="isLoading"></div>
             <div class="title animated jackInTheBox">{{title}}</div>
             <div class="infor-wrapper">

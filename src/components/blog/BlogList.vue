@@ -8,7 +8,7 @@
                 </div>
                 <div class="list-bottom">
                     <div class="bottom-left"><Icon iconClass="user"></Icon>创造者：{{item.name}}</div>
-                    <div class="bottom-right"><span class="create-id" v-if="!isMy"><Icon iconClass="id"></Icon>身份：{{item.uid}}</span><span v-if="isMy" class="edit" :article-id="item.id"><Icon iconClass="edit"></Icon>编辑</span><span v-if="isMy" class="delete" :article-id="item.id" :dom-id="index"><Icon iconClass="delete"></Icon>删除</span><Icon iconClass="time"></Icon>诞生时间：{{item.moment}}</div>
+                    <div class="bottom-right"><span class="create-id" v-if="!isMy"><Icon iconClass="id"></Icon>身份：{{item.uid}}</span><span v-if="isMy && !noEdit" class="edit" :article-id="item.id"><Icon iconClass="edit"></Icon>编辑</span><span v-if="isMy && !noEdit" class="delete" :article-id="item.id" :dom-id="index"><Icon iconClass="delete"></Icon>删除</span><Icon iconClass="time"></Icon>诞生时间：{{item.moment}}</div>
                 </div>
             </div>            
         </div>
@@ -26,6 +26,9 @@
       return {}
     },
     props: {
+        noEdit:{
+            default:false
+        },
         data: {
             default:[]
         },

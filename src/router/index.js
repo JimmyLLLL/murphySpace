@@ -35,6 +35,16 @@ export default new Router({
       path: "/Writter",
       name: "Writter",
       component: () => import("../components/writter/writter.vue")
+    },
+    {
+      path: "/PersonalOther",
+      name: "PersonalOther",
+      component: () => import("../views/personal/PersonalOther.vue")
+    },
+    {
+      path: "/MySpaceOther",
+      name: "MySpaceOther",
+      component: () => import("../views/mySpace/MySpaceOther")
     }
   ]
 });

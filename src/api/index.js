@@ -104,5 +104,21 @@ export default {
   },
   uploadBlogPhoto(form) {
     return realAxios.post("uploadBlogPhoto", form);
+  },
+  checkExistAccount(account) {
+    return realAxios.post("checkExistAccount", {
+      account
+    });
+  },
+  register(account, password) {
+    return realAxios.post("register", {
+      account,
+      password
+    });
+  },
+  findDataByName(name) {
+    return realAxios.post("findDataByName", {
+      name
+    });
   }
 };

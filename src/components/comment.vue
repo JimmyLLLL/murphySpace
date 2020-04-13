@@ -8,7 +8,7 @@
         <div class="comment-list-wrapper">
             <template v-if="commentList.length">
                 <div v-for="(item) in commentList" :key="item.id" class="comment-single-wrapper">
-                    <img class='img-wrapper' :src="'http://www.jinmylam.xin:8003/uploads/avator/'+item.avator"/>  
+                    <img class='img-wrapper' :src="'http://www.jinmylam.xin:8003/uploads/avator/'+item.avator" @click="handleJumpPersonal(item.name)"/>  
                     <div class="infored-wrapper">
                         <div class="infored-1">
                             <span class="nickname">{{item.nickname}}</span>
@@ -45,6 +45,13 @@ export default {
         }
     },
     methods:{
+        handleJumpPersonal(account){
+        const routeData = this.$router.resolve({
+            name: "PersonalOther",
+            query:{account}
+        });
+        window.open(routeData.href, '_blank');
+        },
         async handleDelete(id){
             this.$confirm('即将删除', '警告', {
                     confirmButtonText: '再次确认',
@@ -138,6 +145,7 @@ export default {
     }
 }
 .img-wrapper{
+    cursor: pointer;
     width: 50px;
     height: 50px;
     background-size:cover

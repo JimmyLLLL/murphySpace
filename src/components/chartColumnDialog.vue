@@ -158,8 +158,6 @@ import {Chart} from 'highcharts-vue'
                     this.$message.error('生成chart出现问题');
                     
                 }
-
-
             })
         },
         getBlob (canvas) { //获取blob对象

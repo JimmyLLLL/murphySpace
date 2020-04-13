@@ -53,6 +53,8 @@ export default {
         case '/Personal':
           this.isInPersonal = true
           this.blogRouteBefore = from.path
+        default:
+          this.isInPersonal = true
       }
     }
   },
